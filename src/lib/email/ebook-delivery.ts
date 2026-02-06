@@ -4,6 +4,7 @@
  */
 
 import { sendEmail } from '../email-service';
+import { getEbookDownloadUrl, getEbookTitle, EBOOK_CONFIG } from '../../config/ebook-config';
 
 export interface EbookDeliveryData {
   email: string;
@@ -28,6 +29,10 @@ export async function sendEbookDeliveryEmail(data: EbookDeliveryData) {
  * HTML template for e-book delivery email
  */
 function getEbookDeliveryTemplate(name: string): string {
+  const ebookUrl = getEbookDownloadUrl();
+  const ebookTitle = getEbookTitle();
+  const placementQuizUrl = EBOOK_CONFIG.cta.placementQuiz;
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -58,7 +63,7 @@ function getEbookDeliveryTemplate(name: string): string {
         
         <!-- Download Button -->
         <div style="text-align: center; margin: 40px 0;">
-          <a href="https://www.figma.com/make/cdTIfrByI85Fy91l0D4Tvo/Create-Best-Selling-Ebook?fullscreen=1" 
+          <a href="${ebookUrl}" 
              style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); color: white; padding: 18px 48px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);">
             📚 Download Your Guide Now
           </a>
@@ -124,7 +129,7 @@ function getEbookDeliveryTemplate(name: string): string {
           </div>
           
           <div style="text-align: center; margin: 32px 0;">
-            <a href="https://mzmarianna.com/placement-quiz" 
+            <a href="${placementQuizUrl}" 
                style="display: inline-block; background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%); color: white; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);">
               🎯 Take Our Free Placement Quiz
             </a>
@@ -188,6 +193,9 @@ export async function sendEbookFollowUpEmail(email: string, firstName?: string) 
 }
 
 function getFollowUpTemplate(name: string): string {
+  const ebookUrl = getEbookDownloadUrl();
+  const placementQuizUrl = EBOOK_CONFIG.cta.placementQuiz;
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -224,7 +232,7 @@ function getFollowUpTemplate(name: string): string {
         </p>
         
         <div style="text-align: center; margin: 32px 0;">
-          <a href="https://www.figma.com/make/cdTIfrByI85Fy91l0D4Tvo/Create-Best-Selling-Ebook?fullscreen=1" 
+          <a href="${ebookUrl}" 
              style="display: inline-block; background: #8b5cf6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold;">
             📖 Read the Guide
           </a>
@@ -235,7 +243,7 @@ function getFollowUpTemplate(name: string): string {
         </p>
         
         <div style="text-align: center; margin: 24px 0;">
-          <a href="https://mzmarianna.com/placement-quiz" 
+          <a href="${placementQuizUrl}" 
              style="display: inline-block; background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold;">
             🎯 Take Placement Quiz
           </a>
