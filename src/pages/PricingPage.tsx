@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { Crown, ArrowLeft } from 'lucide-react';
 import PricingTable from '../components/payments/PricingTable';
 import StripeNotConfiguredBanner from '../components/payments/StripeNotConfiguredBanner';
+import UrgencyTimer from '../components/marketing/UrgencyTimer';
 import { useNavigate } from 'react-router-dom';
 
 // Import logo
@@ -40,6 +41,11 @@ export default function PricingPage() {
           </div>
         </div>
       </nav>
+
+      {/* Urgency Timer */}
+      <div className="max-w-7xl mx-auto px-4 pt-6">
+        <UrgencyTimer expiryHours={48} discountPercent={50} />
+      </div>
 
       {/* Hero Section */}
       <section className="py-16 px-4">

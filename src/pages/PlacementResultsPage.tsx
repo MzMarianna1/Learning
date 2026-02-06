@@ -11,6 +11,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
 import { completeQuiz, getQuizAttempt, type QuizAttempt } from '../lib/quiz/placement-quiz';
+import UrgencyTimer from '../components/marketing/UrgencyTimer';
 
 export default function PlacementResultsPage() {
   const { attemptId } = useParams<{ attemptId: string }>();
@@ -125,6 +126,9 @@ export default function PlacementResultsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Urgency Timer */}
+        <UrgencyTimer expiryHours={48} discountPercent={50} className="mb-8" />
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
