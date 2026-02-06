@@ -13,7 +13,19 @@
 
   Want to make your site stunning with beautiful images?
 
-  - **Quick Start (5 minutes):** [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md)
-  - **Complete Guide:** [ADDING_GRAPHICS_AND_PICTURES.md](./ADDING_GRAPHICS_AND_PICTURES.md)
-  - **Example Code:** [EXAMPLE_GALLERY_PAGE.tsx](./EXAMPLE_GALLERY_PAGE.tsx)
+  ### Documentation:
+  - **⚡ Quick Start (5 minutes):** [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md)
+  - **📖 Complete Guide:** [ADDING_GRAPHICS_AND_PICTURES.md](./ADDING_GRAPHICS_AND_PICTURES.md)
+  - **👁️ Visual Guide:** [VISUAL_IMAGE_GUIDE.md](./VISUAL_IMAGE_GUIDE.md)
+  - **✅ Checklist:** [STUNNING_SITE_CHECKLIST.md](./STUNNING_SITE_CHECKLIST.md)
+  - **💻 Example Code:** [EXAMPLE_GALLERY_PAGE.tsx](./EXAMPLE_GALLERY_PAGE.tsx)
+
+  ### Quick Example:
+  ```tsx
+  // 1. Import your image
+  import heroImage from '../assets/hero-background.jpg';
+
+  // 2. Use it in your component
+  <img src={heroImage} alt="Hero" className="w-64 rounded-lg shadow-xl" />
+  ```
   
