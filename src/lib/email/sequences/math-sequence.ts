@@ -300,13 +300,13 @@ function getMathBookReminderTemplate(data: MathSequenceData): string {
     <html>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 40px 20px; border-radius: 16px 16px 0 0; text-align: center; color: white;">
-        <h1 style="margin: 0;">🎁 Last Chance: 25% Off Math Book</h1>
+        <h1 style="margin: 0;">🎁 Last Chance: ${book.discountPercent}% Off Math Book</h1>
       </div>
       
       <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <p style="font-size: 18px;">Your 25% discount expires tomorrow! ⏰</p>
+        <p style="font-size: 18px;">Your ${book.discountPercent}% discount expires tomorrow! ⏰</p>
         
-        <p>We don't want ${data.studentName} to miss out on "Math Doesn't Suck" - the book that's helped thousands of kids fall in love with math.</p>
+        <p>We don't want ${data.studentName} to miss out on "${book.title}" - the book that's helped thousands of kids fall in love with math.</p>
         
         <div style="background: #fee2e2; padding: 20px; border-radius: 12px; margin: 24px 0; border: 2px solid #ef4444;">
           <p style="margin: 0; text-align: center;">

@@ -5,6 +5,7 @@
 
 import { sendMathSequenceEmail, type MathSequenceData } from './sequences/math-sequence';
 import { sendWarriorsSequenceEmail, type WarriorsSequenceData } from './sequences/warriors-sequence';
+import { DEFAULT_USER_AGE } from './sequences/config';
 import { supabase } from '../supabase/client';
 
 /**
