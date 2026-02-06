@@ -8,4 +8,12 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
+
+  ## Adding Graphics and Pictures 🎨
+
+  Want to make your site stunning with beautiful images?
+
+  - **Quick Start (5 minutes):** [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md)
+  - **Complete Guide:** [ADDING_GRAPHICS_AND_PICTURES.md](./ADDING_GRAPHICS_AND_PICTURES.md)
+  - **Example Code:** [EXAMPLE_GALLERY_PAGE.tsx](./EXAMPLE_GALLERY_PAGE.tsx)
   
