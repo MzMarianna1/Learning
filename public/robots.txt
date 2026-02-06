@@ -1,0 +1,14 @@
+# robots.txt for Mz. Marianna's Academy
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /checkout/
+Disallow: /payment-success/
+
+# Sitemaps
+Sitemap: https://www.mzmariannasacademy.com/sitemap.xml
+
+# Crawl-delay for slower bots
+User-agent: *
+Crawl-delay: 1
