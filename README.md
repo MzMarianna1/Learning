@@ -13,19 +13,20 @@
 
   **Want to make your site stunning with beautiful images?** We've created comprehensive guides for you!
 
-  ### 🎯 Have Images to Upload?
-  - **📤 Upload from Computer or Google Drive** → [HOW_TO_UPLOAD_IMAGES.md](./HOW_TO_UPLOAD_IMAGES.md) - Complete upload guide!
-  - **👁️ Visual Upload Workflow** → [IMAGE_UPLOAD_WORKFLOW.md](./IMAGE_UPLOAD_WORKFLOW.md) - See the process visually
+  ### 🎯 NEW: Have Images to Upload Right Now?
+  - **⚡ START HERE** → [START_HERE_UPLOAD.md](./START_HERE_UPLOAD.md) - Quick answer to "How do I upload?"
+  - **📤 Complete Upload Guide** → [HOW_TO_UPLOAD_IMAGES.md](./HOW_TO_UPLOAD_IMAGES.md) - From computer or Google Drive
+  - **👁️ Visual Workflow** → [IMAGE_UPLOAD_WORKFLOW.md](./IMAGE_UPLOAD_WORKFLOW.md) - See the process step-by-step
 
-  ### 🚀 Start Here (Pick One):
-  - **⚡ Never done this before?** → [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md) - Add your first image in 5 minutes!
+  ### 🚀 Getting Started (Pick Based on What You Need):
+  - **⚡ First time adding images?** → [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md) - 5 minutes to first image!
   - **👁️ Visual learner?** → [VISUAL_IMAGE_GUIDE.md](./VISUAL_IMAGE_GUIDE.md) - Diagrams and workflows
-  - **📖 Want all the details?** → [ADDING_GRAPHICS_AND_PICTURES.md](./ADDING_GRAPHICS_AND_PICTURES.md) - Complete guide
+  - **📖 Want all the details?** → [ADDING_GRAPHICS_AND_PICTURES.md](./ADDING_GRAPHICS_AND_PICTURES.md) - Complete technical guide
 
   ### 📚 Additional Resources:
-  - **✅ Making the whole site beautiful?** → [STUNNING_SITE_CHECKLIST.md](./STUNNING_SITE_CHECKLIST.md) - Step-by-step checklist
+  - **✅ Making the whole site beautiful?** → [STUNNING_SITE_CHECKLIST.md](./STUNNING_SITE_CHECKLIST.md) - Quality checklist
   - **💻 Learn by example?** → [EXAMPLE_GALLERY_PAGE.tsx](./EXAMPLE_GALLERY_PAGE.tsx) - Working code examples
-  - **📋 Overview of everything** → [GRAPHICS_DOCUMENTATION_SUMMARY.md](./GRAPHICS_DOCUMENTATION_SUMMARY.md)
+  - **📋 Overview of all docs** → [GRAPHICS_DOCUMENTATION_SUMMARY.md](./GRAPHICS_DOCUMENTATION_SUMMARY.md)
 
   ### ⚡ Quick Workflow:
   ```
