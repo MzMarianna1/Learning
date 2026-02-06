@@ -1,0 +1,21 @@
+{
+  "name": "learning",
+  "version": "1.0.0",
+  "description": "gamified tutoring system - neurodivergent achievement",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mzmarianna/Learning.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Mzmarianna/Learning/issues"
+  },
+  "homepage": "https://github.com/Mzmarianna/Learning#readme"
+}
