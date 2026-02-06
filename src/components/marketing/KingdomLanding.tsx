@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Sparkles, Zap, MapPin, Users, Trophy, Swords, LogIn } from 'lucide-react';
+import KingdomMapVisual from './KingdomMapVisual';
 
 interface KingdomLandingProps {
   onStartAdventure: () => void;
@@ -149,17 +150,8 @@ export default function KingdomLanding({ onStartAdventure, onNewHere, onLogin }:
           {/* Holographic Frame */}
           <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl" />
           
-          <div className="relative rounded-3xl overflow-hidden border-4 border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.3)] bg-gradient-to-br from-slate-900 via-purple-900 to-cyan-900">
-            <div className="aspect-video flex flex-col items-center justify-center gap-4 text-white p-10">
-              <span className="text-6xl">🗺️</span>
-              <h3 className="text-3xl font-bold">Dynamic Kingdom Map</h3>
-              <p className="max-w-2xl text-center text-white/75">
-                Track quests, clan territories, and active events in real time. The world evolves as learners progress.
-              </p>
-            </div>
-            
-            {/* Overlay Glow */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent pointer-events-none" />
+          <div className="relative">
+            <KingdomMapVisual />
           </div>
 
           {/* Floating Stats */}
