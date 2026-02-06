@@ -23,6 +23,7 @@ import {
   School,
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import WowlCharacter from './WowlCharacter';
 
 interface LearningKingdomLandingProps {
   onJoinKingdom: () => void; // Renamed from onStartQuiz
@@ -417,12 +418,7 @@ export default function LearningKingdomLanding({ onJoinKingdom, onLogin }: Learn
               </div>
             </div>
             <div className="relative">
-              <div className="w-full aspect-square rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-2 border-amber-500/30 flex items-center justify-center">
-                <div className="text-9xl">🦉</div>
-              </div>
-              <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl px-6 py-3">
-                <p className="text-white font-bold text-lg">Hoot hoot! Ready to unlock your genius?</p>
-              </div>
+              <WowlCharacter />
             </div>
           </div>
         </div>
