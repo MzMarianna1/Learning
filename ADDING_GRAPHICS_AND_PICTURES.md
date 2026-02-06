@@ -558,7 +558,7 @@ npm run dev
 <img 
   src={highResImage} 
   alt="Clear image"
-  className="w-50 h-50"  // Will display at 200x200 but use 400x400 source
+  className="w-[200px] h-[200px]"  // Will display at 200x200 but use 400x400 source
 />
 ```
 
@@ -572,24 +572,17 @@ npm run dev
 
 ### Problem: TypeScript errors with images
 
-**Solution:** Add type declarations in `src/env.d.ts`:
+**Solution:** This project uses Vite which handles image imports automatically. If you still see TypeScript errors, check that:
+
+1. Your `src/env.d.ts` file includes: `/// <reference types="vite/client" />`
+2. The file path is correct in your import statement
+3. The file extension matches the actual file
+
+If needed, you can add explicit type declarations to `src/env.d.ts`:
 ```typescript
-/// <reference types="vite/client" />
-
-declare module '*.png' {
-  const content: string;
-  export default content;
-}
-
-declare module '*.jpg' {
-  const content: string;
-  export default content;
-}
-
-declare module '*.svg' {
-  const content: string;
-  export default content;
-}
+declare module '*.png';
+declare module '*.jpg';
+declare module '*.svg';
 ```
 
 ---
