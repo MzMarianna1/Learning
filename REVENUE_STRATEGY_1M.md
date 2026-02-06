@@ -252,7 +252,7 @@
 
 #### Week 1: SEO & Landing Pages
 - [x] Update meta tags with ADHD/autism/ESA keywords
-- [ ] Create sitemap.xml and robots.txt ✅
+- [x] Create sitemap.xml and robots.txt
 - [ ] Set up Google Search Console & Analytics
 - [ ] Install Hotjar for heatmap tracking
 - [ ] A/B test homepage headlines
