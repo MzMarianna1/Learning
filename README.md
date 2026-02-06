@@ -13,6 +13,10 @@
 
   **Want to make your site stunning with beautiful images?** We've created comprehensive guides for you!
 
+  ### 🎯 Have Images to Upload?
+  - **📤 Upload from Computer or Google Drive** → [HOW_TO_UPLOAD_IMAGES.md](./HOW_TO_UPLOAD_IMAGES.md) - Complete upload guide!
+  - **👁️ Visual Upload Workflow** → [IMAGE_UPLOAD_WORKFLOW.md](./IMAGE_UPLOAD_WORKFLOW.md) - See the process visually
+
   ### 🚀 Start Here (Pick One):
   - **⚡ Never done this before?** → [QUICK_START_IMAGES.md](./QUICK_START_IMAGES.md) - Add your first image in 5 minutes!
   - **👁️ Visual learner?** → [VISUAL_IMAGE_GUIDE.md](./VISUAL_IMAGE_GUIDE.md) - Diagrams and workflows
@@ -23,19 +27,13 @@
   - **💻 Learn by example?** → [EXAMPLE_GALLERY_PAGE.tsx](./EXAMPLE_GALLERY_PAGE.tsx) - Working code examples
   - **📋 Overview of everything** → [GRAPHICS_DOCUMENTATION_SUMMARY.md](./GRAPHICS_DOCUMENTATION_SUMMARY.md)
 
-  ### ⚡ Quick Example:
-  ```tsx
-  // 1. Put your image in: src/assets/my-photo.jpg
-  
-  // 2. Import it at the top of your component
-  import myPhoto from '../assets/my-photo.jpg';
-
-  // 3. Use it!
-  <img 
-    src={myPhoto} 
-    alt="My awesome photo" 
-    className="w-64 rounded-lg shadow-xl hover:scale-105 transition-transform" 
-  />
+  ### ⚡ Quick Workflow:
+  ```
+  1. Download images (computer or Google Drive)
+  2. Optimize at TinyPNG.com (makes them 70-90% smaller!)
+  3. Copy to: src/assets/your-image.jpg
+  4. Import: import img from '../assets/your-image.jpg';
+  5. Use: <img src={img} alt="Description" className="w-64 rounded-lg" />
   ```
 
   **That's it! Your image will appear on your site. Now go make it STUNNING! ✨**
