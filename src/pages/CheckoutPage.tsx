@@ -6,11 +6,16 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { CreditCard, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
+import { CreditCard, Lock, ArrowLeft, CheckCircle, Wallet, DollarSign } from 'lucide-react';
 import { PRICING_PLANS, ANNUAL_PRICING_PLANS, formatPrice, getStripe } from '../lib/stripe/config';
+import { isClassWalletConfigured } from '../lib/classwallet/config';
+import { createClassWalletPayment, ClassWalletPaymentType } from '../lib/classwallet/service';
+import { isPayPalConfigured, getPayPalConfig } from '../lib/paypal/config';
+import { createPayPalSubscription } from '../lib/paypal/service';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import StripeNotConfiguredBanner from '../components/payments/StripeNotConfiguredBanner';
+import { supabase } from '../lib/supabase/client';
 
 // Import logo
 import crownLogo from '../assets/8a35650ca022ec6bc649702b5b35c75083424e81.png';
@@ -21,8 +26,17 @@ export default function CheckoutPage() {
   const planId = searchParams.get('plan');
 
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'classwallet'>('stripe');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [classWalletType, setClassWalletType] = useState<ClassWalletPaymentType>(ClassWalletPaymentType.SCHOLARSHIP);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Get current user on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUser(user);
+    });
+  }, []);
 
   useEffect(() => {
     // Find the selected plan
@@ -42,6 +56,12 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
+      if (!currentUser) {
+        toast.error('Please log in to complete checkout');
+        navigate('/login');
+        return;
+      }
+
       const stripe = await getStripe();
       if (!stripe) {
         toast.error('Stripe is not configured yet. Please add your Stripe keys to continue.');
@@ -62,8 +82,8 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           priceId: selectedPlan.stripePriceId,
-          userId: 'user_123', // Replace with actual user ID from auth
-          userEmail: 'mariannav920@gmail.com', // Replace with actual user email
+          userId: currentUser.id,
+          userEmail: currentUser.email,
           successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/pricing`,
         }),
@@ -94,17 +114,103 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // In production, integrate PayPal SDK
-      toast.info('PayPal integration coming soon! Use Stripe for now.');
-      
-      // Example PayPal flow:
-      // 1. Load PayPal SDK
-      // 2. Create order via your backend
-      // 3. Capture payment
-      // 4. Redirect to success page
+      if (!currentUser) {
+        toast.error('Please log in to complete checkout');
+        navigate('/login');
+        return;
+      }
+
+      if (!isPayPalConfigured()) {
+        toast.error('PayPal is not configured yet. Please use Stripe or ClassWallet.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Validate PayPal Plan ID exists and is properly configured
+      const paypalPlanId = selectedPlan.paypalPlanId;
+      if (!paypalPlanId || paypalPlanId === '') {
+        toast.error('PayPal subscription plan is not configured yet. Please contact support or use another payment method.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Get user profile for name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', currentUser.id)
+        .single();
+
+      // Create PayPal subscription
+      const result = await createPayPalSubscription({
+        userId: currentUser.id,
+        userEmail: currentUser.email || '',
+        userName: profile?.display_name || currentUser.email || 'User',
+        planId: selectedPlan.id,
+        paypalPlanId,
+        returnUrl: `${window.location.origin}/payment-success`,
+        cancelUrl: `${window.location.origin}/pricing`,
+      });
+
+      if (result.success && result.approvalUrl) {
+        // Redirect to PayPal for approval
+        window.location.href = result.approvalUrl;
+      } else {
+        throw new Error(result.error || 'Failed to create PayPal subscription');
+      }
     } catch (error: any) {
       console.error('PayPal checkout error:', error);
-      toast.error('Payment failed. Please try again.');
+      toast.error(error.message || 'Payment failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleClassWalletCheckout = async () => {
+    setIsProcessing(true);
+
+    try {
+      if (!currentUser) {
+        toast.error('Please log in to complete checkout');
+        navigate('/login');
+        return;
+      }
+
+      if (!isClassWalletConfigured()) {
+        toast.error('ClassWallet is not configured yet. Please use Stripe or PayPal.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Get user profile for name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', currentUser.id)
+        .single();
+
+      // Create ClassWallet payment
+      const result = await createClassWalletPayment({
+        userId: currentUser.id,
+        userEmail: currentUser.email || '',
+        userName: profile?.display_name || currentUser.email || 'User',
+        planId: selectedPlan.id,
+        amount: selectedPlan.price,
+        description: `${selectedPlan.name} - Learning Kingdom Subscription`,
+        paymentType: classWalletType,
+        returnUrl: `${window.location.origin}/payment-success`,
+        cancelUrl: `${window.location.origin}/pricing`,
+      });
+
+      if (result.success && result.authorizationUrl) {
+        // Redirect to ClassWallet for authorization
+        window.location.href = result.authorizationUrl;
+      } else {
+        throw new Error(result.error || 'Failed to create ClassWallet payment');
+      }
+    } catch (error: any) {
+      console.error('ClassWallet checkout error:', error);
+      toast.error(error.message || 'Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -275,7 +381,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <p className="font-bold text-gray-900">PayPal</p>
-                        <p className="text-sm text-gray-600">Fast & secure</p>
+                        <p className="text-sm text-gray-600">Autopay subscription</p>
                       </div>
                     </div>
                     <div
@@ -286,18 +392,63 @@ export default function CheckoutPage() {
                       {paymentMethod === 'paypal' && <CheckCircle className="w-4 h-4 text-white" />}
                     </div>
                   </div>
-                  <div className="mt-2 ml-9">
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                      Coming Soon
-                    </span>
+                </button>
+
+                {/* ClassWallet */}
+                <button
+                  onClick={() => setPaymentMethod('classwallet')}
+                  className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                    paymentMethod === 'classwallet'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-green-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Wallet className="w-6 h-6 text-green-600" />
+                      <div>
+                        <p className="font-bold text-gray-900">ClassWallet</p>
+                        <p className="text-sm text-gray-600">Scholarship & reimbursement</p>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                        paymentMethod === 'classwallet' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                      }`}
+                    >
+                      {paymentMethod === 'classwallet' && <CheckCircle className="w-4 h-4 text-white" />}
+                    </div>
                   </div>
                 </button>
+
+                {/* ClassWallet Payment Type Selector */}
+                {paymentMethod === 'classwallet' && (
+                  <div className="ml-9 mt-2 space-y-2">
+                    <p className="text-sm font-semibold text-gray-700">Payment Type:</p>
+                    <select
+                      value={classWalletType}
+                      onChange={(e) => setClassWalletType(e.target.value as ClassWalletPaymentType)}
+                      className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                    >
+                      <option value={ClassWalletPaymentType.SCHOLARSHIP}>Scholarship Program</option>
+                      <option value={ClassWalletPaymentType.REIMBURSEMENT}>Reimbursement</option>
+                      <option value={ClassWalletPaymentType.ESA}>Education Savings Account (ESA)</option>
+                      <option value={ClassWalletPaymentType.EMPOWERMENT}>Empowerment Scholarship</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {/* Checkout Button */}
               <Button
-                onClick={paymentMethod === 'stripe' ? handleStripeCheckout : handlePayPalCheckout}
-                disabled={isProcessing || paymentMethod === 'paypal'}
+                onClick={
+                  paymentMethod === 'stripe'
+                    ? handleStripeCheckout
+                    : paymentMethod === 'paypal'
+                    ? handlePayPalCheckout
+                    : handleClassWalletCheckout
+                }
+                disabled={isProcessing}
                 className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 text-white py-4 rounded-xl text-lg font-bold shadow-xl hover:shadow-2xl disabled:opacity-50 transition-all"
               >
                 {isProcessing ? (
