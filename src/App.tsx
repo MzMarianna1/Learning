@@ -19,6 +19,9 @@ import HomePage from './pages/HomePage';
 import FreeGuidePage from './pages/FreeGuidePage';
 import ThankYouPage from './pages/ThankYouPage';
 import AboutPage from './pages/AboutPage';
+import WelcomePage from './pages/WelcomePage';
+import AssessmentOfferPage from './pages/AssessmentOfferPage';
+import ScheduleAssessmentPage from './pages/ScheduleAssessmentPage';
 
 // Payments
 import PricingPage from './pages/PricingPage';
@@ -161,6 +164,12 @@ export default function App() {
         <Route path="/free-guide" element={<FreeGuidePage />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/about" element={<AboutPage />} />
+        
+        {/* Visitor Workflow */}
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/get-started" element={<WelcomePage />} />
+        <Route path="/assessment-offer" element={<AssessmentOfferPage />} />
+        <Route path="/schedule-assessment" element={<ScheduleAssessmentPage />} />
         
         {/* Payment Routes (public access) */}
         <Route path="/pricing" element={<PricingPage />} />
