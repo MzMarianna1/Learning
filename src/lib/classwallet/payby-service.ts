@@ -126,9 +126,8 @@ export async function redirectToPayByClassWalletCheckout(
     const data = await response.json();
     
     // Use the checkout URL returned by the server
-    // The server should return either a complete checkout URL or a token to append
     if (!data.checkoutUrl) {
-      throw new Error('Server did not return a checkout URL');
+      throw new Error(`Server did not return a checkout URL. Received: ${JSON.stringify(data)}`);
     }
     
     return {
