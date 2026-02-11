@@ -215,7 +215,9 @@ export default function CheckoutPage() {
         userName,
         orderData,
         `${window.location.origin}/payment-success`,
-        `${window.location.origin}/pricing`
+        `${window.location.origin}/pricing`,
+        undefined, // userPhone
+        classWalletType // Pass the selected payment type
       );
 
       if (result.success && result.checkoutUrl) {

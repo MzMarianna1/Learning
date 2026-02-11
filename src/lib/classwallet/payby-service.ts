@@ -7,7 +7,7 @@
  * Step 3: Handle payment confirmation callback
  */
 
-import { getClassWalletConfig, getPayByClassWalletCheckoutUrl } from './config';
+import { getClassWalletConfig, getPayByClassWalletCheckoutUrl, ClassWalletPaymentType } from './config';
 
 /**
  * Session data for Pay by ClassWallet
@@ -60,7 +60,8 @@ export async function establishPayByClassWalletSession(
   userId: string,
   userEmail: string,
   userName: string,
-  userPhone?: string
+  userPhone?: string,
+  paymentType?: ClassWalletPaymentType
 ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
   try {
     const response = await fetch('/api/classwallet-establish-session', {
@@ -73,6 +74,7 @@ export async function establishPayByClassWalletSession(
         userEmail,
         userName,
         userPhone,
+        paymentType,
       }),
     });
 
@@ -102,7 +104,8 @@ export async function redirectToPayByClassWalletCheckout(
   sessionId: string,
   orderData: PayByClassWalletOrder,
   returnUrl: string,
-  cancelUrl: string
+  cancelUrl: string,
+  paymentType?: ClassWalletPaymentType
 ): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
   try {
     // Store order data on the server associated with this session
@@ -116,6 +119,7 @@ export async function redirectToPayByClassWalletCheckout(
         orderData,
         returnUrl,
         cancelUrl,
+        paymentType,
       }),
     });
 
@@ -197,14 +201,16 @@ export async function createPayByClassWalletPayment(
   orderData: Omit<PayByClassWalletOrder, 'sessionId'>,
   returnUrl: string,
   cancelUrl: string,
-  userPhone?: string
+  userPhone?: string,
+  paymentType?: ClassWalletPaymentType
 ): Promise<{ success: boolean; checkoutUrl?: string; sessionId?: string; error?: string }> {
   // Step 1: Establish session
   const sessionResult = await establishPayByClassWalletSession(
     userId,
     userEmail,
     userName,
-    userPhone
+    userPhone,
+    paymentType
   );
 
   if (!sessionResult.success || !sessionResult.sessionId) {
@@ -221,7 +227,8 @@ export async function createPayByClassWalletPayment(
     sessionId,
     { ...orderData, sessionId },
     returnUrl,
-    cancelUrl
+    cancelUrl,
+    paymentType
   );
 
   if (!checkoutResult.success || !checkoutResult.checkoutUrl) {
