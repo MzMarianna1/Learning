@@ -118,6 +118,41 @@ export const PROGRAM_OFFERINGS: ProgramOffering[] = [
     },
     category: 'camp',
     available: true
+  },
+  {
+    id: 'homeschool-program',
+    name: 'Complete Homeschool Program',
+    description: 'Comprehensive daily homeschool program with live sessions, self-paced learning, and social hours',
+    format: 'Virtual Daily Program',
+    grades: 'K–8',
+    frequency: '5 days per week',
+    sessionLength: '4 sessions + 1 hour social hour daily',
+    tools: [
+      'Self-paced lessons and projects',
+      'Gamified learning apps',
+      'Printable workbooks',
+      'Live tutoring sessions',
+      'Interactive curriculum',
+      'Progress tracking dashboard'
+    ],
+    focusAreas: [
+      'Complete Common Core aligned curriculum',
+      'Daily live instruction and support',
+      'Self-paced learning modules',
+      'Gamified educational apps',
+      'Social hour for peer interaction',
+      'Printable workbooks and materials',
+      'Parent resources and coaching',
+      'Individualized learning paths'
+    ],
+    educationalBenefit: 'Everything families need for successful homeschooling - live sessions, self-paced content, gamified learning, and social connections all in one comprehensive program',
+    pricing: {
+      perWeek: 120,
+      programTotal: 480,
+      programDuration: '4 weeks (monthly)'
+    },
+    category: 'tutoring',
+    available: true
   }
 ];
 

@@ -29,6 +29,7 @@ import ClassWalletCallbackPage from './pages/ClassWalletCallbackPage';
 // Programs
 import ProgramsPage from './pages/ProgramsPage';
 import ProgramCheckoutPage from './pages/ProgramCheckoutPage';
+import HomeschoolEnrollmentPage from './pages/HomeschoolEnrollmentPage';
 
 // Quest System
 import QuestsPage from './pages/QuestsPage';
@@ -170,6 +171,7 @@ export default function App() {
         {/* Program Routes (public access) */}
         <Route path="/programs" element={<ProgramsPage />} />
         <Route path="/programs/checkout" element={<ProgramCheckoutPage />} />
+        <Route path="/enroll/homeschool" element={<HomeschoolEnrollmentPage />} />
         
         {/* Public Placement Quiz (FREE - no login required) */}
         <Route path="/placement-quiz" element={<PlacementQuizPage />} />

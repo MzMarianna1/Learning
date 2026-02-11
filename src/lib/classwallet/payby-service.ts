@@ -63,7 +63,7 @@ export async function establishPayByClassWalletSession(
   userPhone?: string
 ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
   try {
-    const response = await fetch('/.netlify/functions/classwallet-establish-session', {
+    const response = await fetch('/api/classwallet-establish-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ export async function redirectToPayByClassWalletCheckout(
 ): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
   try {
     // Store order data on the server associated with this session
-    const response = await fetch('/.netlify/functions/classwallet-prepare-checkout', {
+    const response = await fetch('/api/classwallet-prepare-checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ export async function redirectToPayByClassWalletCheckout(
     const data = await response.json();
     
     // Construct the Pay by ClassWallet checkout URL with callback
-    const callbackUrl = `${window.location.origin}/.netlify/functions/classwallet-callback`;
+    const callbackUrl = `${window.location.origin}/api/classwallet-callback`;
     const checkoutUrl = getPayByClassWalletCheckoutUrl(callbackUrl);
     
     return {
@@ -150,7 +150,7 @@ export async function verifyPayByClassWalletPayment(
   sessionId: string
 ): Promise<{ success: boolean; confirmation?: PayByClassWalletConfirmation; error?: string }> {
   try {
-    const response = await fetch('/.netlify/functions/classwallet-verify-payment', {
+    const response = await fetch('/api/classwallet-verify-payment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
