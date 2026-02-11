@@ -8,6 +8,7 @@
  */
 
 import { getClassWalletConfig } from './config';
+import { getClassWalletConfig, getPayByClassWalletCheckoutUrl, ClassWalletPaymentType } from './config';
 
 /**
  * Session data for Pay by ClassWallet
@@ -60,6 +61,7 @@ export async function establishPayByClassWalletSession(
   userId: string,
   userEmail: string,
   userName: string,
+  paymentType: ClassWalletPaymentType,
   userPhone?: string
 ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
   try {
@@ -72,6 +74,7 @@ export async function establishPayByClassWalletSession(
         userId,
         userEmail,
         userName,
+        paymentType,
         userPhone,
       }),
     });
@@ -198,6 +201,7 @@ export async function createPayByClassWalletPayment(
   orderData: Omit<PayByClassWalletOrder, 'sessionId'>,
   returnUrl: string,
   cancelUrl: string,
+  paymentType: ClassWalletPaymentType,
   userPhone?: string
 ): Promise<{ success: boolean; checkoutUrl?: string; sessionId?: string; error?: string }> {
   // Step 1: Establish session
@@ -205,6 +209,7 @@ export async function createPayByClassWalletPayment(
     userId,
     userEmail,
     userName,
+    paymentType,
     userPhone
   );
 
