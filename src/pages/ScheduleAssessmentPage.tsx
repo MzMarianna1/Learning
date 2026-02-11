@@ -17,8 +17,8 @@ export default function ScheduleAssessmentPage() {
   const childName = searchParams.get('child') || 'your child';
   const parentName = searchParams.get('name') || 'there';
 
-  // Google Calendar scheduling link (replace with actual link)
-  const googleCalendarLink = 'https://calendar.google.com/calendar/appointments/schedules/...'; // TO BE UPDATED
+  // Google Calendar scheduling link
+  const googleCalendarLink = 'https://calendar.app.google/uyb2i5jPznbuH6z46';
 
   const handleOpenCalendar = () => {
     // Open Google Calendar in new tab
