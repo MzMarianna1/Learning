@@ -1,17 +1,32 @@
 
-  # Gamified Tutoring App
+  # Gamified Tutoring App - Mz. Marianna's Learning Kingdom
 
   This is a code bundle for Gamified Tutoring App. The original project is available at https://www.figma.com/design/ilFglhVk2TTi1RSBNq0jCd/Gamified-Tutoring-App.
 
-  ## 🚀 Deploy to Vercel
+  ## ⚡ Deploy to Vercel NOW!
 
-  **Ready to deploy to www.mzmarianna.com?**
+  **🎯 Ready to deploy to www.mzmarianna.com?**
 
-  - **⚡ Quick Start** → [VERCEL_QUICK_START.md](./VERCEL_QUICK_START.md) - Deploy in 5 minutes!
-  - **📖 Complete Guide** → [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) - Full deployment documentation
-  - **📚 Repository Overview** → [LEARNING_FILES_OVERVIEW.md](./LEARNING_FILES_OVERVIEW.md) - All learning files & features
+  ### Choose Your Speed:
+  - **🚀 5-Minute Deploy** → [VERCEL_QUICK_START.md](./VERCEL_QUICK_START.md) - Get live FAST!
+  - **📖 Complete Setup** → [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) - Full deployment guide
+  - **🔑 API Keys Help** → [ENVIRONMENT_VARIABLES_GUIDE.md](./ENVIRONMENT_VARIABLES_GUIDE.md) - Environment setup
+  - **📚 What's Included** → [LEARNING_FILES_OVERVIEW.md](./LEARNING_FILES_OVERVIEW.md) - All features & files
+  - **✅ Start Here** → [START_HERE_VERCEL.md](./START_HERE_VERCEL.md) - Choose the right guide for you
 
-  ## Running the code
+  ### ✅ What's Ready:
+  - Complete Learning Kingdom application with gamification
+  - ClassWallet integration for ESA/529 payments
+  - Email capture funnels
+  - Student progress tracking
+  - Build tested and verified
+  - Full documentation included
+
+  **→ Start with [START_HERE_VERCEL.md](./START_HERE_VERCEL.md) to begin deployment!**
+
+  ---
+
+  ## 💻 Local Development
 
   Run `npm i` to install the dependencies.
 
