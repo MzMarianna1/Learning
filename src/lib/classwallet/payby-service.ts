@@ -125,13 +125,15 @@ export async function redirectToPayByClassWalletCheckout(
 
     const data = await response.json();
     
-    // Construct the Pay by ClassWallet checkout URL with callback
-    const callbackUrl = `${window.location.origin}/api/classwallet-callback`;
-    const checkoutUrl = getPayByClassWalletCheckoutUrl(callbackUrl);
+    // Use the checkout URL returned by the server
+    // The server should return either a complete checkout URL or a token to append
+    if (!data.checkoutUrl) {
+      throw new Error('Server did not return a checkout URL');
+    }
     
     return {
       success: true,
-      checkoutUrl,
+      checkoutUrl: data.checkoutUrl,
     };
   } catch (error: any) {
     console.error('ClassWallet checkout preparation error:', error);
