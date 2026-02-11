@@ -1,0 +1,12 @@
+name: Setup Development Environment
+description: Pre-install dependencies for Copilot coding agent
+
+steps:
+  # Install Node.js dependencies
+  - name: Install npm dependencies
+    run: npm ci
+    
+  # Build the project to ensure everything works
+  # This will also verify TypeScript compilation via Vite
+  - name: Build project
+    run: npm run build
