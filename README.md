@@ -1,9 +1,32 @@
 
-  # Gamified Tutoring App
+  # Gamified Tutoring App - Mz. Marianna's Learning Kingdom
 
   This is a code bundle for Gamified Tutoring App. The original project is available at https://www.figma.com/design/ilFglhVk2TTi1RSBNq0jCd/Gamified-Tutoring-App.
 
-  ## Running the code
+  ## ⚡ Deploy to Vercel NOW!
+
+  **🎯 Ready to deploy to www.mzmarianna.com?**
+
+  ### Choose Your Speed:
+  - **🚀 5-Minute Deploy** → [VERCEL_QUICK_START.md](./VERCEL_QUICK_START.md) - Get live FAST!
+  - **📖 Complete Setup** → [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) - Full deployment guide
+  - **🔑 API Keys Help** → [ENVIRONMENT_VARIABLES_GUIDE.md](./ENVIRONMENT_VARIABLES_GUIDE.md) - Environment setup
+  - **📚 What's Included** → [LEARNING_FILES_OVERVIEW.md](./LEARNING_FILES_OVERVIEW.md) - All features & files
+  - **✅ Start Here** → [START_HERE_VERCEL.md](./START_HERE_VERCEL.md) - Choose the right guide for you
+
+  ### ✅ What's Ready:
+  - Complete Learning Kingdom application with gamification
+  - ClassWallet integration for ESA/529 payments
+  - Email capture funnels
+  - Student progress tracking
+  - Build tested and verified
+  - Full documentation included
+
+  **→ Start with [START_HERE_VERCEL.md](./START_HERE_VERCEL.md) to begin deployment!**
+
+  ---
+
+  ## 💻 Local Development
 
   Run `npm i` to install the dependencies.
 
