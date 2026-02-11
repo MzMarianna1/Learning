@@ -8,8 +8,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CreditCard, Lock, ArrowLeft, CheckCircle, Wallet, DollarSign } from 'lucide-react';
 import { PRICING_PLANS, ANNUAL_PRICING_PLANS, formatPrice, getStripe } from '../lib/stripe/config';
-import { isClassWalletConfigured } from '../lib/classwallet/config';
-import { createClassWalletPayment, ClassWalletPaymentType } from '../lib/classwallet/service';
+import { isClassWalletConfigured, ClassWalletPaymentType } from '../lib/classwallet/config';
+import { createClassWalletPayment } from '../lib/classwallet/service';
 import { createPayByClassWalletPayment } from '../lib/classwallet/payby-service';
 import { isPayPalConfigured, getPayPalConfig } from '../lib/paypal/config';
 import { createPayPalSubscription } from '../lib/paypal/service';
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
 
       // Create order data for Pay by ClassWallet
       const orderData = {
-        orderId: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        orderId: `order_${crypto.randomUUID()}`,
         items: [
           {
             id: selectedPlan.id,

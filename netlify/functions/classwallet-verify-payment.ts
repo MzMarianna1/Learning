@@ -6,6 +6,9 @@
 import { Handler } from '@netlify/functions';
 
 // In-memory session storage (shared with other functions)
+// NOTE: This is a demonstration. In production, this MUST be replaced with
+// a persistent storage solution that is shared across all function instances.
+// Netlify Functions are stateless and don't share memory between instances.
 const sessions = new Map<string, any>();
 
 export const handler: Handler = async (event, context) => {

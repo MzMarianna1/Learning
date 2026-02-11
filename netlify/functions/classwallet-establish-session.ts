@@ -7,6 +7,13 @@
 import { Handler } from '@netlify/functions';
 
 // In-memory session storage (replace with database in production)
+// NOTE: This implementation is for demonstration purposes only.
+// In production, use a persistent storage solution like:
+// - Supabase (PostgreSQL)
+// - Redis
+// - DynamoDB
+// - Any other database that supports serverless functions
+// This is necessary because Netlify functions are stateless and don't share memory.
 const sessions = new Map<string, any>();
 
 export const handler: Handler = async (event, context) => {
@@ -45,8 +52,8 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    // Generate a unique session ID
-    const sessionId = `cw_session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Generate a unique session ID using crypto.randomUUID()
+    const sessionId = `cw_session_${crypto.randomUUID()}`;
 
     // Store session data (in production, use a database)
     sessions.set(sessionId, {

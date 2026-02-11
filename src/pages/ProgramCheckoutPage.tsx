@@ -89,7 +89,7 @@ export default function ProgramCheckoutPage() {
 
       // Create order data for Pay by ClassWallet
       const orderData = {
-        orderId: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        orderId: `order_${crypto.randomUUID()}`,
         items: [
           {
             id: selectedOption.id,
