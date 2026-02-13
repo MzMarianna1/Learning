@@ -39,7 +39,10 @@ export function createServerClient() {
   }
 
   // Validate that we're not accidentally using the anon key
-  if (supabaseServiceRoleKey.length < 100) {
+  // Service role keys are JWT tokens and are typically 200+ characters
+  // Anon keys are also JWTs but we use a minimum length check as a sanity check
+  const MIN_SERVICE_ROLE_KEY_LENGTH = 100;
+  if (supabaseServiceRoleKey.length < MIN_SERVICE_ROLE_KEY_LENGTH) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY appears to be invalid (too short). ' +
       'Make sure you are using the service_role key, not the anon key.'
