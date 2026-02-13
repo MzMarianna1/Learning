@@ -84,8 +84,10 @@ export function createServerClient() {
     );
   }
 
-  console.log('[Server Client] Initializing with service role key');
-  console.log('[Server Client] URL:', supabaseUrl);
+  // Only log in development, and never log the actual key
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Server Client] Initializing server-side Supabase client');
+  }
 
   return createClient<Database>(supabaseUrl, serviceRoleKey, {
     auth: {
