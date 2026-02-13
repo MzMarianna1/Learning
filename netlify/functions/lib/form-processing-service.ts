@@ -12,6 +12,24 @@ import {
 } from './google-sheets-service';
 
 /**
+ * Helper function to split and clean comma-separated strings
+ */
+function splitAndClean(value: string): string[] {
+  if (!value || value.trim() === '') return [];
+  return value
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+
+/**
+ * Validate email format
+ */
+function isValidEmail(email: string): boolean {
+  return email.includes('@') && email.split('@').length === 2;
+}
+
+/**
  * Check if form submission has already been processed
  */
 export async function isSubmissionProcessed(rowNumber: number): Promise<boolean> {
@@ -107,11 +125,20 @@ async function createStudentProfile(
   const age = estimateAgeFromGrade(grade);
   const tier = determineTierFromGrade(grade);
 
+  // Validate parent email format
+  if (!isValidEmail(submission.email)) {
+    throw new Error(`Invalid email format: ${submission.email}`);
+  }
+
+  // Create student email by adding child name as alias
+  const [emailLocal, emailDomain] = submission.email.split('@');
+  const studentEmail = `${emailLocal}+${childName.toLowerCase().replace(/\s+/g, '')}@${emailDomain}`;
+
   // Create auth user for student
   const { data: studentProfile, error: profileError } = await supabase
     .from('profiles')
     .insert({
-      email: `${submission.email.split('@')[0]}+${childName.toLowerCase().replace(/\s+/g, '')}@${submission.email.split('@')[1]}`,
+      email: studentEmail,
       display_name: childName,
       role: 'student',
     })
@@ -134,8 +161,8 @@ async function createStudentProfile(
       total_xp: 0,
       gems: 0,
       preferences: {
-        interests: submission.childLikes.split(',').map(s => s.trim()),
-        strengths: submission.childStrengths.split(',').map(s => s.trim()),
+        interests: splitAndClean(submission.childLikes),
+        strengths: splitAndClean(submission.childStrengths),
       },
     })
     .select()
@@ -168,9 +195,9 @@ async function createStudentProfile(
       form_submission_id: formSubmissionId,
       grade,
       age_estimated: age,
-      biggest_struggles: submission.biggestStruggles.split(',').map(s => s.trim()),
-      strengths: submission.childStrengths.split(',').map(s => s.trim()),
-      interests: submission.childLikes.split(',').map(s => s.trim()),
+      biggest_struggles: splitAndClean(submission.biggestStruggles),
+      strengths: splitAndClean(submission.childStrengths),
+      interests: splitAndClean(submission.childLikes),
       programs_interested: submission.programsInterested,
       tutoring_preference: submission.tutoringPreference,
       payment_method: submission.paymentMethod,
