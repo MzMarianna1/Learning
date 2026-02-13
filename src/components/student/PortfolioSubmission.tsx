@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/lib/supabase/client';
 import { uploadFile } from '@/lib/supabase/storage';
+import { sanitizeContent } from '@/lib/safety/child-safety';
 
 type SubmissionType = 'video' | 'image' | 'note' | null;
 
@@ -115,6 +116,14 @@ export default function PortfolioSubmission({
         const blob = new Blob(chunksRef.current, { type: 'video/webm' });
         setRecordedVideo(blob);
         const url = URL.createObjectURL(blob);
+        
+        // Validate that the URL is a blob URL to prevent XSS
+        if (!url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+          toast.error('Invalid video source');
+          return;
+        }
+        
         setVideoPreviewUrl(url);
         
         // Stop all tracks
@@ -175,9 +184,10 @@ export default function PortfolioSubmission({
         return;
       }
 
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file (PNG, JPG, etc.)');
+      // Check file type - only allow safe image formats (no SVG to prevent XSS)
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type.toLowerCase())) {
+        toast.error('Please select a safe image file (PNG, JPG, or WebP only). SVG files are not allowed for security reasons.');
         return;
       }
 
@@ -202,6 +212,9 @@ export default function PortfolioSubmission({
     setUploadProgress(0);
 
     try {
+      // Sanitize notes to prevent XSS attacks
+      const sanitizedNotes = sanitizeContent(notes);
+
       // Simulate upload progress for now
       // TODO: Implement actual Supabase Storage upload
       for (let i = 0; i <= 100; i += 10) {
@@ -212,8 +225,11 @@ export default function PortfolioSubmission({
       // TODO: Upload file to Supabase Storage
       // const { data: fileData } = await uploadFile(bucket, path, file);
 
-      // TODO: Save to Supabase database
-      // const { data, error } = await supabase.from('portfolio_items').insert({...});
+      // TODO: Save to Supabase database with sanitized content
+      // const { data, error } = await supabase.from('portfolio_items').insert({
+      //   ...
+      //   notes: sanitizedNotes,
+      // });
 
       toast.success('Portfolio item saved! 🎉', {
         description: 'Great work! Your learning has been documented.',
