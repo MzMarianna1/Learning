@@ -14,11 +14,12 @@ import type { Database } from './database.types';
  * Use with caution - only for trusted server-side operations
  */
 export function createServerSupabaseClient() {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  // Try server-side env var first, fall back to VITE_ prefixed one for compatibility
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl) {
-    throw new Error('VITE_SUPABASE_URL is not set');
+    throw new Error('SUPABASE_URL or VITE_SUPABASE_URL is not set');
   }
 
   if (!supabaseServiceRoleKey) {
