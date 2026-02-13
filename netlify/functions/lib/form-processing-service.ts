@@ -24,10 +24,11 @@ function splitAndClean(value: string): string[] {
 
 /**
  * Validate email format
+ * More comprehensive email validation that handles most edge cases
  */
 function isValidEmail(email: string): boolean {
-  // Basic but robust email validation regex
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // RFC 5322-compliant email validation (simplified but comprehensive)
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
   return emailRegex.test(email);
 }
 
@@ -146,7 +147,9 @@ async function createStudentProfile(
     throw new Error(`Unable to generate valid email alias from child name: ${childName}`);
   }
   
-  const studentEmail = `${emailLocal}+${sanitizedChildName}@${emailDomain}`;
+  // Add timestamp suffix to ensure uniqueness (e.g., maryjane1234567890)
+  const uniqueSuffix = Date.now().toString().slice(-6);
+  const studentEmail = `${emailLocal}+${sanitizedChildName}${uniqueSuffix}@${emailDomain}`;
 
   // Create auth user for student
   const { data: studentProfile, error: profileError } = await supabase
