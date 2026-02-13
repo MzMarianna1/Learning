@@ -13,7 +13,7 @@ export default function WelcomePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  // Get visitor name from URL params
+  // Get visitor name from URL params (defaults to "there" if not provided)
   const visitorName = searchParams.get('name') || 'there';
 
   const handleQuestionnaireClick = () => {
