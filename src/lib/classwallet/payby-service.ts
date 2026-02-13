@@ -7,7 +7,8 @@
  * Step 3: Handle payment confirmation callback
  */
 
-import { getClassWalletConfig, getPayByClassWalletCheckoutUrl } from './config';
+import { getClassWalletConfig } from './config';
+import { getClassWalletConfig, getPayByClassWalletCheckoutUrl, ClassWalletPaymentType } from './config';
 
 /**
  * Session data for Pay by ClassWallet
@@ -60,7 +61,7 @@ export async function establishPayByClassWalletSession(
   userId: string,
   userEmail: string,
   userName: string,
-  paymentType?: string,
+  paymentType: ClassWalletPaymentType,
   userPhone?: string
 ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
   try {
@@ -73,6 +74,7 @@ export async function establishPayByClassWalletSession(
         userId,
         userEmail,
         userName,
+        paymentType,
         userPhone,
         paymentType,
       }),
@@ -127,13 +129,14 @@ export async function redirectToPayByClassWalletCheckout(
 
     const data = await response.json();
     
-    // Construct the Pay by ClassWallet checkout URL with callback
-    const callbackUrl = `${window.location.origin}/api/classwallet-callback`;
-    const checkoutUrl = getPayByClassWalletCheckoutUrl(callbackUrl);
+    // Use the checkout URL returned by the server
+    if (!data.checkoutUrl) {
+      throw new Error(`Server did not return a checkout URL. Received: ${JSON.stringify(data)}`);
+    }
     
     return {
       success: true,
-      checkoutUrl,
+      checkoutUrl: data.checkoutUrl,
     };
   } catch (error: any) {
     console.error('ClassWallet checkout preparation error:', error);
@@ -199,7 +202,7 @@ export async function createPayByClassWalletPayment(
   orderData: Omit<PayByClassWalletOrder, 'sessionId'>,
   returnUrl: string,
   cancelUrl: string,
-  paymentType?: string,
+  paymentType: ClassWalletPaymentType,
   userPhone?: string
 ): Promise<{ success: boolean; checkoutUrl?: string; sessionId?: string; error?: string }> {
   // Step 1: Establish session
