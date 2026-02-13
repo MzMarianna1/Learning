@@ -1,9 +1,18 @@
 /**
  * Form Processing Service
  * Processes Google Sheets form submissions and creates student profiles
+ * 
+ * SECURITY NOTE: These functions require a Supabase client with elevated privileges
+ * (service role key) to perform operations like creating profiles and relationships.
+ * 
+ * The client is passed as a parameter rather than imported to ensure:
+ * 1. Server-side API endpoints use the service role client
+ * 2. Test code can inject mock clients
+ * 3. No accidental use of anon key for privileged operations
  */
 
-import { supabase } from '../supabase/client';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../supabase/database.types';
 import type { FormSubmission } from './google-sheets-service';
 import {
   parseChildNameAndGrade,
@@ -12,9 +21,20 @@ import {
 } from './google-sheets-service';
 
 /**
- * Check if form submission has already been processed
+ * Type alias for Supabase client used in this service
  */
-export async function isSubmissionProcessed(rowNumber: number): Promise<boolean> {
+type ServiceSupabaseClient = SupabaseClient<Database>;
+
+/**
+ * Check if form submission has already been processed
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
+ * @param rowNumber - Google Sheets row number to check
+ */
+export async function isSubmissionProcessed(
+  supabase: ServiceSupabaseClient,
+  rowNumber: number
+): Promise<boolean> {
   const { data, error } = await supabase
     .from('form_submissions')
     .select('id')
@@ -26,8 +46,14 @@ export async function isSubmissionProcessed(rowNumber: number): Promise<boolean>
 
 /**
  * Save form submission to database
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
+ * @param submission - Form submission data from Google Sheets
  */
-export async function saveFormSubmission(submission: FormSubmission) {
+export async function saveFormSubmission(
+  supabase: ServiceSupabaseClient,
+  submission: FormSubmission
+) {
   const { data, error } = await supabase
     .from('form_submissions')
     .insert({
@@ -59,8 +85,14 @@ export async function saveFormSubmission(submission: FormSubmission) {
 
 /**
  * Create parent profile if doesn't exist
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
  */
-async function createOrGetParentProfile(email: string, name: string) {
+async function createOrGetParentProfile(
+  supabase: ServiceSupabaseClient,
+  email: string,
+  name: string
+) {
   // Check if parent already exists
   const { data: existingProfile } = await supabase
     .from('profiles')
@@ -97,8 +129,11 @@ async function createOrGetParentProfile(email: string, name: string) {
 
 /**
  * Create student profile from form submission
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
  */
 async function createStudentProfile(
+  supabase: ServiceSupabaseClient,
   submission: FormSubmission,
   parentId: string,
   formSubmissionId: string
@@ -188,8 +223,11 @@ async function createStudentProfile(
 
 /**
  * Create initial assessment record
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
  */
 async function createAssessmentRecord(
+  supabase: ServiceSupabaseClient,
   studentId: string,
   formSubmissionId: string,
   grade: number | null
@@ -216,30 +254,46 @@ async function createAssessmentRecord(
 
 /**
  * Process a form submission end-to-end
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
+ * @param submission - Form submission data from Google Sheets
+ * 
+ * @example
+ * ```typescript
+ * // In a Vercel serverless function
+ * import { createServerClient } from '@/lib/supabase/server-client';
+ * import { processFormSubmission } from '@/lib/services/form-processing-service';
+ * 
+ * const supabase = createServerClient();
+ * const result = await processFormSubmission(supabase, submission);
+ * ```
  */
-export async function processFormSubmission(submission: FormSubmission) {
+export async function processFormSubmission(
+  supabase: ServiceSupabaseClient,
+  submission: FormSubmission
+) {
   try {
     console.log(`Processing submission for ${submission.email}...`);
 
     // Check if already processed
-    const alreadyProcessed = await isSubmissionProcessed(submission.rowNumber);
+    const alreadyProcessed = await isSubmissionProcessed(supabase, submission.rowNumber);
     if (alreadyProcessed) {
       console.log(`Submission ${submission.rowNumber} already processed`);
       return { success: false, reason: 'already_processed' };
     }
 
     // Save form submission
-    const formRecord = await saveFormSubmission(submission);
+    const formRecord = await saveFormSubmission(supabase, submission);
 
     // Create or get parent profile
-    const parent = await createOrGetParentProfile(submission.email, submission.parentName);
+    const parent = await createOrGetParentProfile(supabase, submission.email, submission.parentName);
 
     // Create student profile
-    const student = await createStudentProfile(submission, parent.id, formRecord.id);
+    const student = await createStudentProfile(supabase, submission, parent.id, formRecord.id);
 
     // Create assessment record
     const { name: childName, grade } = parseChildNameAndGrade(submission.childNameAndGrade);
-    await createAssessmentRecord(student.id, formRecord.id, grade);
+    await createAssessmentRecord(supabase, student.id, formRecord.id, grade);
 
     // Mark submission as processed
     await supabase
@@ -268,8 +322,10 @@ export async function processFormSubmission(submission: FormSubmission) {
 
 /**
  * Process all new submissions
+ * 
+ * @param supabase - Supabase client (should be service role client for API endpoints)
  */
-export async function processNewSubmissions() {
+export async function processNewSubmissions(supabase: ServiceSupabaseClient) {
   // Get last processed row number
   const { data: lastSubmission } = await supabase
     .from('form_submissions')
