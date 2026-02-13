@@ -55,7 +55,7 @@ export default function PortfolioSubmission({
     if (!url) return undefined;
     // Only allow blob: and https: URLs
     if (url.startsWith('blob:') || url.startsWith('https:')) {
-      return DOMPurify.sanitize(url, { ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|blob):)/ });
+      return DOMPurify.sanitize(url, { ALLOWED_URI_REGEXP: /^(?:https:|blob:)/ });
     }
     return undefined;
   };
@@ -439,7 +439,7 @@ export default function PortfolioSubmission({
           ) : (
             <div className="space-y-4">
               <div className="relative rounded-xl overflow-hidden border-2 border-calm-border">
-                {imagePreviewUrl && imagePreviewUrl.startsWith('blob:') && (
+                {imagePreviewUrl && (
                   <img
                     src={sanitizeUrl(imagePreviewUrl)}
                     alt="Preview"
