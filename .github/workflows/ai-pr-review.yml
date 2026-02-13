@@ -1,0 +1,95 @@
+name: AI PR Review (Security + Payments)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr diff "$PR_NUMBER" --repo "$REPO" > pr.diff
+          echo "saved=true" >> $GITHUB_OUTPUT
+
+      - name: AI Review
+        if: steps.diff.outputs.saved == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - << 'PY'
+          import os, subprocess, textwrap
+
+          # Read diff (cap size to avoid huge payloads)
+          diff = open("pr.diff", "r", encoding="utf-8", errors="ignore").read()
+          max_chars = 120000
+          if len(diff) > max_chars:
+            diff = diff[:max_chars] + "\n\n[Diff truncated for size]\n"
+
+          # Install openai SDK
+          subprocess.check_call(["python", "-m", "pip", "install", "--quiet", "openai"])
+
+          from openai import OpenAI
+          client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+          system = """You are a senior software engineer reviewing a GitHub PR.
+          Focus on:
+          1) Secrets/credentials leaks (Supabase, API keys).
+          2) Payments correctness (Stripe, PayPal invoices, Zelle, scholarships).
+          3) Checkout URL security validation (prevent open redirect, only server-returned URLs, allowlist domains).
+          4) Backend wiring + type safety (enum mapping, validation, null handling).
+          Output MUST be concise, actionable, and grouped as:
+          - Blockers (must fix)
+          - Suggestions (nice to fix)
+          - Quick tests to run
+          If you see a likely vulnerability, call it out clearly and propose a fix pattern.
+          """
+
+          user = f"Review this PR diff:\n\n{diff}"
+
+          resp = client.chat.completions.create(
+              model="gpt-4.1-mini",
+              messages=[
+                  {"role":"system","content":system},
+                  {"role":"user","content":user},
+              ],
+              temperature=0.2,
+          )
+
+          review = resp.choices[0].message.content.strip()
+
+          body = f"""🤖 **AI PR Review (Security + Payments)**
+
+          {review}
+
+          _If this review seems off, reply with “recheck” and what you changed._
+          """
+
+          pr_number = os.environ["PR_NUMBER"]
+          repo = os.environ["REPO"]
+
+          # Post a PR comment
+          subprocess.check_call(["gh", "pr", "comment", pr_number, "--repo", repo, "--body", body])
+
+          print("Posted AI review comment.")
+          PY
