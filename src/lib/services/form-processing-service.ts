@@ -3,15 +3,16 @@
  * Processes Google Sheets form submissions and creates student profiles
  * 
  * ⚠️ IMPORTANT: This service performs privileged operations (creating profiles, relationships, etc.)
- * and should be used with a server-side Supabase client that has service role privileges.
+ * and MUST be used with a server-side Supabase client that has service role privileges.
  * 
  * For server-side usage (API routes, serverless functions):
  * - Import createServerClient from '../supabase/server-client'
  * - Pass the server client to these functions
  * 
- * For client-side usage (NOT RECOMMENDED):
- * - These operations will likely fail due to Row Level Security (RLS)
- * - Only use if you have explicitly configured RLS to allow these operations
+ * ⛔ Client-side usage is NOT SUPPORTED:
+ * - These operations require service role privileges that bypass RLS
+ * - Service role keys must NEVER be exposed to the browser
+ * - Attempting to use these functions client-side will fail due to RLS restrictions
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

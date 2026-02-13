@@ -44,10 +44,20 @@ export function createServerClient() {
   }
 
   // Validate that the service role key looks correct
+  // JWT tokens have three parts separated by dots (header.payload.signature)
   if (!serviceRoleKey.startsWith('eyJ')) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY does not appear to be a valid JWT token. ' +
       'Please check your environment variables.'
+    );
+  }
+
+  // Additional JWT structure validation
+  const parts = serviceRoleKey.split('.');
+  if (parts.length !== 3) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY is not properly formatted. ' +
+      'JWT tokens must have three parts separated by dots (header.payload.signature).'
     );
   }
 
@@ -78,6 +88,12 @@ export function validateServerEnvironment(): void {
     errors.push('SUPABASE_SERVICE_ROLE_KEY is not set');
   } else if (!serviceRoleKey.startsWith('eyJ')) {
     errors.push('SUPABASE_SERVICE_ROLE_KEY does not appear to be a valid JWT token');
+  } else {
+    // Validate JWT structure (three parts separated by dots)
+    const parts = serviceRoleKey.split('.');
+    if (parts.length !== 3) {
+      errors.push('SUPABASE_SERVICE_ROLE_KEY is not properly formatted (expected JWT with 3 parts)');
+    }
   }
 
   if (errors.length > 0) {
