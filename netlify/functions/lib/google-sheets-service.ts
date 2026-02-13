@@ -78,10 +78,21 @@ export interface FormSubmission {
  * Initialize Google Sheets API client
  */
 function getGoogleSheetsClient() {
+  const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
+  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
+
+  if (!clientEmail) {
+    throw new Error('GOOGLE_SHEETS_CLIENT_EMAIL environment variable is not set.');
+  }
+
+  if (!privateKey) {
+    throw new Error('GOOGLE_SHEETS_PRIVATE_KEY environment variable is not set.');
+  }
+
   const auth = new google.auth.GoogleAuth({
     credentials: {
-      client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: clientEmail,
+      private_key: privateKey.replace(/\\n/g, '\n'),
     },
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });

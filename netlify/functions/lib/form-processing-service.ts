@@ -3,13 +3,34 @@
  * Processes Google Sheets form submissions and creates student profiles
  */
 
-import { supabase } from '../supabase/client';
+import { supabase } from '../../../src/lib/supabase/client';
 import type { FormSubmission } from './google-sheets-service';
 import {
   parseChildNameAndGrade,
   estimateAgeFromGrade,
   determineTierFromGrade,
 } from './google-sheets-service';
+
+/**
+ * Helper function to split and clean comma-separated strings
+ */
+function splitAndClean(value: string): string[] {
+  if (!value || value.trim() === '') return [];
+  return value
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+
+/**
+ * Validate email format
+ * More comprehensive email validation that handles most edge cases
+ */
+function isValidEmail(email: string): boolean {
+  // RFC 5322-compliant email validation (simplified but comprehensive)
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  return emailRegex.test(email);
+}
 
 /**
  * Check if form submission has already been processed
@@ -107,11 +128,34 @@ async function createStudentProfile(
   const age = estimateAgeFromGrade(grade);
   const tier = determineTierFromGrade(grade);
 
+  // Validate parent email format
+  if (!isValidEmail(submission.email)) {
+    throw new Error(`Invalid email format: ${submission.email}`);
+  }
+
+  // Create student email by adding child name as alias
+  const atIndex = submission.email.indexOf('@');
+  if (atIndex === -1) {
+    throw new Error(`Email missing '@' symbol: ${submission.email}`);
+  }
+  
+  const emailLocal = submission.email.substring(0, atIndex);
+  const emailDomain = submission.email.substring(atIndex + 1);
+  const sanitizedChildName = childName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+  
+  if (!sanitizedChildName) {
+    throw new Error(`Unable to generate valid email alias from child name: ${childName}`);
+  }
+  
+  // Add timestamp suffix to ensure uniqueness (e.g., maryjane1234567890)
+  const uniqueSuffix = Date.now().toString().slice(-6);
+  const studentEmail = `${emailLocal}+${sanitizedChildName}${uniqueSuffix}@${emailDomain}`;
+
   // Create auth user for student
   const { data: studentProfile, error: profileError } = await supabase
     .from('profiles')
     .insert({
-      email: `${submission.email.split('@')[0]}+${childName.toLowerCase().replace(/\s+/g, '')}@${submission.email.split('@')[1]}`,
+      email: studentEmail,
       display_name: childName,
       role: 'student',
     })
@@ -134,8 +178,8 @@ async function createStudentProfile(
       total_xp: 0,
       gems: 0,
       preferences: {
-        interests: submission.childLikes.split(',').map(s => s.trim()),
-        strengths: submission.childStrengths.split(',').map(s => s.trim()),
+        interests: splitAndClean(submission.childLikes),
+        strengths: splitAndClean(submission.childStrengths),
       },
     })
     .select()
@@ -168,9 +212,9 @@ async function createStudentProfile(
       form_submission_id: formSubmissionId,
       grade,
       age_estimated: age,
-      biggest_struggles: submission.biggestStruggles.split(',').map(s => s.trim()),
-      strengths: submission.childStrengths.split(',').map(s => s.trim()),
-      interests: submission.childLikes.split(',').map(s => s.trim()),
+      biggest_struggles: splitAndClean(submission.biggestStruggles),
+      strengths: splitAndClean(submission.childStrengths),
+      interests: splitAndClean(submission.childLikes),
       programs_interested: submission.programsInterested,
       tutoring_preference: submission.tutoringPreference,
       payment_method: submission.paymentMethod,
