@@ -26,7 +26,9 @@ function splitAndClean(value: string): string[] {
  * Validate email format
  */
 function isValidEmail(email: string): boolean {
-  return email.includes('@') && email.split('@').length === 2;
+  // Basic but robust email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 /**
@@ -131,8 +133,11 @@ async function createStudentProfile(
   }
 
   // Create student email by adding child name as alias
-  const [emailLocal, emailDomain] = submission.email.split('@');
-  const studentEmail = `${emailLocal}+${childName.toLowerCase().replace(/\s+/g, '')}@${emailDomain}`;
+  const atIndex = submission.email.indexOf('@');
+  const emailLocal = submission.email.substring(0, atIndex);
+  const emailDomain = submission.email.substring(atIndex + 1);
+  const sanitizedChildName = childName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+  const studentEmail = `${emailLocal}+${sanitizedChildName}@${emailDomain}`;
 
   // Create auth user for student
   const { data: studentProfile, error: profileError } = await supabase
