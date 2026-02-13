@@ -1,9 +1,13 @@
 /**
  * Form Processing Service
  * Processes Google Sheets form submissions and creates student profiles
+ * 
+ * SECURITY NOTE: This service performs privileged operations that bypass RLS.
+ * It should only be used with a server-side Supabase client (service role key).
+ * See: src/lib/supabase/server-client.ts
  */
 
-import { supabase } from '../supabase/client';
+import type { ServerSupabaseClient } from '../supabase/server-client';
 import type { FormSubmission } from './google-sheets-service';
 import {
   parseChildNameAndGrade,
@@ -13,8 +17,14 @@ import {
 
 /**
  * Check if form submission has already been processed
+ * 
+ * @param supabase - Server-side Supabase client with service role key
+ * @param rowNumber - The Google Sheets row number
  */
-export async function isSubmissionProcessed(rowNumber: number): Promise<boolean> {
+export async function isSubmissionProcessed(
+  supabase: ServerSupabaseClient,
+  rowNumber: number
+): Promise<boolean> {
   const { data, error } = await supabase
     .from('form_submissions')
     .select('id')
@@ -26,8 +36,14 @@ export async function isSubmissionProcessed(rowNumber: number): Promise<boolean>
 
 /**
  * Save form submission to database
+ * 
+ * @param supabase - Server-side Supabase client with service role key
+ * @param submission - The form submission data
  */
-export async function saveFormSubmission(submission: FormSubmission) {
+export async function saveFormSubmission(
+  supabase: ServerSupabaseClient,
+  submission: FormSubmission
+) {
   const { data, error } = await supabase
     .from('form_submissions')
     .insert({
@@ -59,8 +75,14 @@ export async function saveFormSubmission(submission: FormSubmission) {
 
 /**
  * Create parent profile if doesn't exist
+ * 
+ * @param supabase - Server-side Supabase client with service role key
  */
-async function createOrGetParentProfile(email: string, name: string) {
+async function createOrGetParentProfile(
+  supabase: ServerSupabaseClient,
+  email: string,
+  name: string
+) {
   // Check if parent already exists
   const { data: existingProfile } = await supabase
     .from('profiles')
@@ -97,8 +119,11 @@ async function createOrGetParentProfile(email: string, name: string) {
 
 /**
  * Create student profile from form submission
+ * 
+ * @param supabase - Server-side Supabase client with service role key
  */
 async function createStudentProfile(
+  supabase: ServerSupabaseClient,
   submission: FormSubmission,
   parentId: string,
   formSubmissionId: string
@@ -188,8 +213,11 @@ async function createStudentProfile(
 
 /**
  * Create initial assessment record
+ * 
+ * @param supabase - Server-side Supabase client with service role key
  */
 async function createAssessmentRecord(
+  supabase: ServerSupabaseClient,
   studentId: string,
   formSubmissionId: string,
   grade: number | null
@@ -216,30 +244,36 @@ async function createAssessmentRecord(
 
 /**
  * Process a form submission end-to-end
+ * 
+ * @param supabase - Server-side Supabase client with service role key
+ * @param submission - The form submission data
  */
-export async function processFormSubmission(submission: FormSubmission) {
+export async function processFormSubmission(
+  supabase: ServerSupabaseClient,
+  submission: FormSubmission
+) {
   try {
     console.log(`Processing submission for ${submission.email}...`);
 
     // Check if already processed
-    const alreadyProcessed = await isSubmissionProcessed(submission.rowNumber);
+    const alreadyProcessed = await isSubmissionProcessed(supabase, submission.rowNumber);
     if (alreadyProcessed) {
       console.log(`Submission ${submission.rowNumber} already processed`);
       return { success: false, reason: 'already_processed' };
     }
 
     // Save form submission
-    const formRecord = await saveFormSubmission(submission);
+    const formRecord = await saveFormSubmission(supabase, submission);
 
     // Create or get parent profile
-    const parent = await createOrGetParentProfile(submission.email, submission.parentName);
+    const parent = await createOrGetParentProfile(supabase, submission.email, submission.parentName);
 
     // Create student profile
-    const student = await createStudentProfile(submission, parent.id, formRecord.id);
+    const student = await createStudentProfile(supabase, submission, parent.id, formRecord.id);
 
     // Create assessment record
     const { name: childName, grade } = parseChildNameAndGrade(submission.childNameAndGrade);
-    await createAssessmentRecord(student.id, formRecord.id, grade);
+    await createAssessmentRecord(supabase, student.id, formRecord.id, grade);
 
     // Mark submission as processed
     await supabase
@@ -268,8 +302,10 @@ export async function processFormSubmission(submission: FormSubmission) {
 
 /**
  * Process all new submissions
+ * 
+ * @param supabase - Server-side Supabase client with service role key
  */
-export async function processNewSubmissions() {
+export async function processNewSubmissions(supabase: ServerSupabaseClient) {
   // Get last processed row number
   const { data: lastSubmission } = await supabase
     .from('form_submissions')
