@@ -52,14 +52,14 @@ export default function CheckoutPage() {
   }, [planId, navigate]);
 
   const handleStripeCheckout = async () => {
-    setIsProcessing(true);
-
     try {
       if (!currentUser) {
         toast.error('Please log in to complete checkout');
         navigate('/login');
         return;
       }
+
+      setIsProcessing(true);
 
       const stripe = await getStripe();
       if (!stripe) {
@@ -110,14 +110,14 @@ export default function CheckoutPage() {
   };
 
   const handlePayPalCheckout = async () => {
-    setIsProcessing(true);
-
     try {
       if (!currentUser) {
         toast.error('Please log in to complete checkout');
         navigate('/login');
         return;
       }
+
+      setIsProcessing(true);
 
       if (!isPayPalConfigured()) {
         toast.error('PayPal is not configured yet. Please use Stripe or ClassWallet.');
@@ -166,14 +166,14 @@ export default function CheckoutPage() {
   };
 
   const handleClassWalletCheckout = async () => {
-    setIsProcessing(true);
-
     try {
       if (!currentUser) {
         toast.error('Please log in to complete checkout');
         navigate('/login');
         return;
       }
+
+      setIsProcessing(true);
 
       if (!isClassWalletConfigured()) {
         toast.error('ClassWallet is not configured yet. Please use Stripe or PayPal.');
