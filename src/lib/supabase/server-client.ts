@@ -43,21 +43,23 @@ export function createServerClient() {
     );
   }
 
-  // Validate that the service role key looks correct
-  // JWT tokens have three parts separated by dots (header.payload.signature)
-  if (!serviceRoleKey.startsWith('eyJ')) {
-    throw new Error(
-      'SUPABASE_SERVICE_ROLE_KEY does not appear to be a valid JWT token. ' +
-      'Please check your environment variables.'
-    );
-  }
-
-  // Additional JWT structure validation
+  // Validate JWT structure: must have three parts separated by dots
   const parts = serviceRoleKey.split('.');
   if (parts.length !== 3) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY is not properly formatted. ' +
-      'JWT tokens must have three parts separated by dots (header.payload.signature).'
+      'Expected a JWT token with three parts separated by dots (header.payload.signature). ' +
+      'Please check your environment variables.'
+    );
+  }
+
+  // Validate that each part is base64-like (alphanumeric, hyphens, underscores)
+  const base64Pattern = /^[A-Za-z0-9_-]+$/;
+  if (!parts.every(part => base64Pattern.test(part))) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY contains invalid characters. ' +
+      'JWT tokens should only contain base64url-encoded parts. ' +
+      'Please check your environment variables.'
     );
   }
 
@@ -86,13 +88,17 @@ export function validateServerEnvironment(): void {
 
   if (!serviceRoleKey) {
     errors.push('SUPABASE_SERVICE_ROLE_KEY is not set');
-  } else if (!serviceRoleKey.startsWith('eyJ')) {
-    errors.push('SUPABASE_SERVICE_ROLE_KEY does not appear to be a valid JWT token');
   } else {
     // Validate JWT structure (three parts separated by dots)
     const parts = serviceRoleKey.split('.');
     if (parts.length !== 3) {
       errors.push('SUPABASE_SERVICE_ROLE_KEY is not properly formatted (expected JWT with 3 parts)');
+    } else {
+      // Validate base64url encoding
+      const base64Pattern = /^[A-Za-z0-9_-]+$/;
+      if (!parts.every(part => base64Pattern.test(part))) {
+        errors.push('SUPABASE_SERVICE_ROLE_KEY contains invalid characters (expected base64url-encoded JWT)');
+      }
     }
   }
 
