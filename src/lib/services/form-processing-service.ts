@@ -9,12 +9,12 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../supabase/database.types';
-import type { FormSubmission } from './google-sheets-service';
+import type { FormSubmission } from '../../../api/_lib/google-sheets-service';
 import {
   parseChildNameAndGrade,
   estimateAgeFromGrade,
   determineTierFromGrade,
-} from './google-sheets-service';
+} from '../../../api/_lib/google-sheets-service';
 
 /**
  * Check if form submission has already been processed
